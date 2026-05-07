@@ -114,102 +114,87 @@
             justify-content: center;
             min-height: 100%;
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px;
         }
 
         .welcome-logo {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 30px;
-            margin-bottom: 16px;
+            font-size: 24px;
+            margin-bottom: 12px;
         }
 
         .welcome-title {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .welcome-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #6b7280;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        /* 行业选择方块 */
-        .industry-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            max-width: 360px;
+        /* 行业选择 - 横向滚动 */
+        .industry-scroll {
             width: 100%;
+            max-width: 500px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 4px 0;
         }
 
-        .industry-card {
+        .industry-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .industry-list {
+            display: flex;
+            gap: 10px;
+            padding: 0 4px;
+        }
+
+        .industry-chip {
+            flex-shrink: 0;
             background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 16px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 10px 16px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 8px;
         }
 
-        .industry-card:hover {
+        .industry-chip:hover {
             border-color: #4F46E5;
             background: #f5f3ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
         }
 
-        .industry-card.active {
+        .industry-chip.active {
             border-color: #4F46E5;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
             color: white;
         }
 
-        .industry-icon {
-            width: 44px;
-            height: 44px;
-            background: #f3f4f6;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
+        .industry-chip-icon {
+            font-size: 16px;
         }
 
-        .industry-card.active .industry-icon {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .industry-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .industry-card.active .industry-name {
-            color: white;
-        }
-
-        .industry-desc {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .industry-card.active .industry-desc {
-            color: rgba(255,255,255,0.8);
+        .industry-chip-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
         }
 
         /* 消息样式 */
@@ -481,26 +466,36 @@
                     <div class="welcome-logo">📄</div>
                     <h1 class="welcome-title">AI PRD生成器</h1>
                     <p class="welcome-subtitle">选择你的行业，开始生成专业PRD</p>
-                    <div class="industry-grid">
-                        <div class="industry-card" onclick="selectIndustry(this, '电商')">
-                            <div class="industry-icon">🛒</div>
-                            <div class="industry-name">电商</div>
-                            <div class="industry-desc">商城 / 会员 / 订单</div>
-                        </div>
-                        <div class="industry-card" onclick="selectIndustry(this, '社交')">
-                            <div class="industry-icon">💬</div>
-                            <div class="industry-name">社交</div>
-                            <div class="industry-desc">聊天 / 社区 / 匹配</div>
-                        </div>
-                        <div class="industry-card" onclick="selectIndustry(this, '内容')">
-                            <div class="industry-icon">📺</div>
-                            <div class="industry-name">内容</div>
-                            <div class="industry-desc">短视频 / 图文 / 直播</div>
-                        </div>
-                        <div class="industry-card" onclick="selectIndustry(this, 'B端')">
-                            <div class="industry-icon">🏢</div>
-                            <div class="industry-name">B端</div>
-                            <div class="industry-desc">SaaS / 企业 / 管理</div>
+                    <div class="industry-scroll">
+                        <div class="industry-list">
+                            <div class="industry-chip" onclick="selectIndustry(this, '电商')">
+                                <span class="industry-chip-icon">🛒</span>
+                                <span class="industry-chip-name">电商</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, '社交')">
+                                <span class="industry-chip-icon">💬</span>
+                                <span class="industry-chip-name">社交</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, '内容')">
+                                <span class="industry-chip-icon">📺</span>
+                                <span class="industry-chip-name">内容</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, 'B端')">
+                                <span class="industry-chip-icon">🏢</span>
+                                <span class="industry-chip-name">B端</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, '教育')">
+                                <span class="industry-chip-icon">📚</span>
+                                <span class="industry-chip-name">教育</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, '金融')">
+                                <span class="industry-chip-icon">💰</span>
+                                <span class="industry-chip-name">金融</span>
+                            </div>
+                            <div class="industry-chip" onclick="selectIndustry(this, '医疗')">
+                                <span class="industry-chip-icon">🏥</span>
+                                <span class="industry-chip-name">医疗</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -733,7 +728,7 @@
             document.getElementById('messageList').innerHTML = '';
             document.getElementById('welcomeScreen').style.display = 'flex';
             selectedIndustry = '';
-            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.industry-chip').forEach(c => c.classList.remove('active'));
         }
     </script>
 </body>

@@ -5,26 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI PRD生成器</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
             background: #f7f8fa;
             height: 100vh;
             overflow: hidden;
         }
+        .app-layout { display: flex; flex-direction: column; height: 100vh; }
 
-        .app-layout {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* 顶部导航 */
+        /* 顶部 */
         .header {
             background: white;
             border-bottom: 1px solid #e5e5e5;
@@ -33,408 +23,152 @@
             align-items: center;
             justify-content: space-between;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .header-left { display: flex; align-items: center; gap: 8px; }
         .logo {
-            width: 28px;
-            height: 28px;
+            width: 28px; height: 28px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
             border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 14px;
         }
-
-        .header-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .header-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+        .header-right { display: flex; align-items: center; gap: 12px; }
         .header-btn {
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            font-size: 13px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            transition: all 0.2s;
+            background: none; border: none; color: #6b7280;
+            cursor: pointer; font-size: 13px; padding: 4px 10px;
+            border-radius: 6px; transition: all 0.2s;
         }
-
-        .header-btn:hover {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
+        .header-btn:hover { background: #f3f4f6; color: #374151; }
         .avatar {
-            width: 30px;
-            height: 30px;
-            background: #e5e7eb;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-            font-size: 12px;
-            cursor: pointer;
+            width: 30px; height: 30px; background: #e5e7eb;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: #6b7280; font-size: 12px; cursor: pointer;
         }
 
-        /* 对话内容区 */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: #f7f8fa;
-        }
-
-        .chat-inner {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        /* 对话区 */
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; background: #f7f8fa; }
+        .chat-inner { max-width: 800px; margin: 0 auto; }
 
         /* 欢迎界面 */
         .welcome-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100%;
-            text-align: center;
-            padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100%; text-align: center; padding: 20px;
         }
-
         .welcome-logo {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            margin-bottom: 12px;
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 24px; margin-bottom: 12px;
         }
+        .welcome-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+        .welcome-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
 
-        .welcome-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 4px;
-        }
-
-        .welcome-subtitle {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 20px;
-        }
-
-        /* 行业选择 - 铺开网格 */
+        /* 行业标签 */
         .industry-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            max-width: 500px;
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
         }
-
         .industry-chip {
-            background: white;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            background: white; border: 1.5px solid #e5e7eb; border-radius: 20px;
+            padding: 10px 16px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
         }
-
-        .industry-chip:hover {
-            border-color: #4F46E5;
-            background: #f5f3ff;
-        }
-
+        .industry-chip:hover { border-color: #4F46E5; background: #f5f3ff; }
         .industry-chip.active {
             border-color: #4F46E5;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
             color: white;
         }
+        .industry-chip-icon { font-size: 16px; }
+        .industry-chip-name { font-size: 13px; font-weight: 500; }
 
-        .industry-chip-icon {
-            font-size: 16px;
-        }
-
-        .industry-chip-name {
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        /* 消息样式 */
-        .message {
-            margin-bottom: 24px;
-            display: flex;
-            gap: 12px;
-        }
-
-        .message.user {
-            flex-direction: row-reverse;
-        }
-
+        /* 消息 */
+        .message { margin-bottom: 24px; display: flex; gap: 12px; }
+        .message.user { flex-direction: row-reverse; }
         .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
         }
-
-        .message.user .message-avatar {
-            background: #4F46E5;
-            color: white;
-        }
-
-        .message.ai .message-avatar {
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            color: white;
-        }
-
-        .message-content {
-            max-width: 70%;
-        }
-
-        .message.user .message-content {
-            text-align: right;
-        }
-
+        .message.user .message-avatar { background: #4F46E5; color: white; }
+        .message.ai .message-avatar { background: linear-gradient(135deg, #4F46E5, #7C3AED); color: white; }
+        .message-content { max-width: 70%; }
+        .message.user .message-content { text-align: right; }
         .message-bubble {
-            display: inline-block;
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 15px;
-            line-height: 1.6;
-            text-align: left;
+            display: inline-block; padding: 12px 16px; border-radius: 16px;
+            font-size: 15px; line-height: 1.6; text-align: left;
         }
-
-        .message.user .message-bubble {
-            background: #4F46E5;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
+        .message.user .message-bubble { background: #4F46E5; color: white; border-bottom-right-radius: 4px; }
         .message.ai .message-bubble {
-            background: white;
-            color: #1f2937;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            background: white; color: #1f2937;
+            border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
+        /* AI回复样式 */
         .ai-reply h1 { font-size: 1.4em; margin: 16px 0 12px; color: #1f2937; }
         .ai-reply h2 { font-size: 1.2em; margin: 14px 0 10px; color: #374151; }
-        .ai-reply h3 { font-size: 1.05em; margin: 12px 0 8px; color: #4b5563; }
         .ai-reply p { margin-bottom: 10px; }
         .ai-reply table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
         .ai-reply th, .ai-reply td { padding: 10px 12px; border: 1px solid #e5e7eb; text-align: left; }
         .ai-reply th { background: #f9fafb; font-weight: 600; color: #374151; }
         .ai-reply ul, .ai-reply ol { margin: 10px 0; padding-left: 24px; }
         .ai-reply li { margin-bottom: 6px; }
-        .ai-reply strong { color: #1f2937; }
         .ai-reply hr { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
 
         /* 加载动画 */
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 4px 0;
-        }
-
+        .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
         .typing-dot {
-            width: 8px;
-            height: 8px;
-            background: #9ca3af;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
+            width: 8px; height: 8px; background: #9ca3af;
+            border-radius: 50%; animation: typing 1.4s infinite;
         }
-
         .typing-dot:nth-child(2) { animation-delay: 0.2s; }
         .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
             30% { transform: translateY(-4px); opacity: 1; }
         }
 
         /* 底部输入区 */
-        .input-area {
-            background: white;
-            border-top: 1px solid #e5e5e5;
-            padding: 16px 20px;
-        }
-
-        .input-inner {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* 复杂度选择 */
-        .complexity-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            gap: 8px;
-        }
-
-        .complexity-label {
-            font-size: 13px;
-            color: #6b7280;
-        }
-
+        .input-area { background: white; border-top: 1px solid #e5e5e5; padding: 16px 20px; }
+        .input-inner { max-width: 800px; margin: 0 auto; }
+        .complexity-row { display: flex; align-items: center; margin-bottom: 12px; gap: 8px; }
+        .complexity-label { font-size: 13px; color: #6b7280; }
         .complexity-select {
-            padding: 8px 32px 8px 12px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            background: white;
-            font-size: 13px;
-            color: #374151;
-            cursor: pointer;
-            outline: none;
+            padding: 8px 32px 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+            background: white; font-size: 13px; color: #374151; cursor: pointer; outline: none;
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            transition: all 0.2s;
+            background-repeat: no-repeat; background-position: right 10px center;
         }
-
-        .complexity-select:hover {
-            border-color: #4F46E5;
-        }
-
-        .complexity-select:focus {
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        /* 输入框和按钮 */
-        .input-row {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
+        .complexity-select:focus { border-color: #4F46E5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .input-row { display: flex; gap: 12px; align-items: flex-end; }
         .input-wrapper {
-            flex: 1;
-            background: #f3f4f6;
-            border-radius: 12px;
-            padding: 4px;
-            display: flex;
-            align-items: flex-end;
+            flex: 1; background: #f3f4f6; border-radius: 12px; padding: 4px;
+            display: flex; align-items: flex-end;
         }
-
         .input-wrapper textarea {
-            flex: 1;
-            border: none;
-            background: none;
-            padding: 12px;
-            font-size: 15px;
-            resize: none;
-            outline: none;
-            font-family: inherit;
-            max-height: 120px;
-            min-height: 24px;
-            line-height: 1.5;
+            flex: 1; border: none; background: none; padding: 12px; font-size: 15px;
+            resize: none; outline: none; font-family: inherit; max-height: 120px;
+            min-height: 24px; line-height: 1.5;
         }
-
-        .input-wrapper textarea::placeholder {
-            color: #9ca3af;
-        }
-
+        .input-wrapper textarea::placeholder { color: #9ca3af; }
         .send-btn {
-            height: 48px;
-            padding: 0 20px;
+            height: 48px; padding: 0 20px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            font-size: 15px;
-            font-weight: 500;
+            border: none; border-radius: 12px; color: white; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+            flex-shrink: 0; font-size: 15px; font-weight: 500;
         }
+        .send-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .send-btn svg { width: 18px; height: 18px; }
+        .input-tips { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 8px; }
 
-        .send-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .send-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .input-tips {
-            text-align: center;
-            color: #9ca3af;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-
-        /* 滚动条 */
         .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-track { background: transparent; }
         .chat-container::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            .industry-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            .industry-card {
-                padding: 20px 12px;
-            }
-            .industry-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 24px;
-            }
-            .message-content {
-                max-width: 85%;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="app-layout">
-        <!-- 顶部导航 -->
         <header class="header">
             <div class="header-left">
                 <div class="logo">🤖</div>
@@ -446,55 +180,37 @@
             </div>
         </header>
 
-        <!-- 对话内容区 -->
         <div class="chat-container" id="chatContainer">
             <div class="chat-inner" id="chatInner">
-                <!-- 欢迎界面 -->
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-logo">📄</div>
                     <h1 class="welcome-title">AI PRD生成器</h1>
-                    <p class="welcome-subtitle">选择你的行业，开始生成专业PRD</p>
+                    <p class="welcome-subtitle">选择行业，输入需求，一键生成专业PRD</p>
                     <div class="industry-grid">
-                            <div class="industry-chip" onclick="selectIndustry(this, '电商')">
-                                <span class="industry-chip-icon">🛒</span>
-                                <span class="industry-chip-name">电商</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, '社交')">
-                                <span class="industry-chip-icon">💬</span>
-                                <span class="industry-chip-name">社交</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, '内容')">
-                                <span class="industry-chip-icon">📺</span>
-                                <span class="industry-chip-name">内容</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, 'B端')">
-                                <span class="industry-chip-icon">🏢</span>
-                                <span class="industry-chip-name">B端</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, '教育')">
-                                <span class="industry-chip-icon">📚</span>
-                                <span class="industry-chip-name">教育</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, '金融')">
-                                <span class="industry-chip-icon">💰</span>
-                                <span class="industry-chip-name">金融</span>
-                            </div>
-                            <div class="industry-chip" onclick="selectIndustry(this, '医疗')">
-                                <span class="industry-chip-icon">🏥</span>
-                                <span class="industry-chip-name">医疗</span>
-                            </div>
+                        <div class="industry-chip" onclick="selectIndustry(this, '电商')">
+                            <span class="industry-chip-icon">🛒</span>
+                            <span class="industry-chip-name">电商</span>
+                        </div>
+                        <div class="industry-chip" onclick="selectIndustry(this, '社交')">
+                            <span class="industry-chip-icon">💬</span>
+                            <span class="industry-chip-name">社交</span>
+                        </div>
+                        <div class="industry-chip" onclick="selectIndustry(this, '内容')">
+                            <span class="industry-chip-icon">📺</span>
+                            <span class="industry-chip-name">内容</span>
+                        </div>
+                        <div class="industry-chip" onclick="selectIndustry(this, 'B端')">
+                            <span class="industry-chip-icon">🏢</span>
+                            <span class="industry-chip-name">B端</span>
+                        </div>
                     </div>
                 </div>
-
-                <!-- 消息列表 -->
                 <div id="messageList"></div>
             </div>
         </div>
 
-        <!-- 底部输入区 -->
         <div class="input-area">
             <div class="input-inner">
-                <!-- 复杂度选择 -->
                 <div class="complexity-row">
                     <span class="complexity-label">PRD复杂度：</span>
                     <select class="complexity-select" onchange="selectComplexity(this.value)">
@@ -503,17 +219,10 @@
                         <option value="完整">📚 完整版（10页+）</option>
                     </select>
                 </div>
-
-                <!-- 输入框和发送按钮 -->
                 <div class="input-row">
                     <div class="input-wrapper">
-                        <textarea 
-                            id="userInput" 
-                            placeholder="描述你的产品需求..." 
-                            rows="1"
-                            onkeydown="handleKeyDown(event)"
-                            oninput="autoResize(this)"
-                        ></textarea>
+                        <textarea id="userInput" placeholder="描述你的产品需求..." rows="1"
+                            onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
                     </div>
                     <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -532,43 +241,30 @@
         let selectedComplexity = '标准';
         let isGenerating = false;
 
-        // 选择行业
         function selectIndustry(el, industry) {
-            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.industry-chip').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             selectedIndustry = industry;
-            
-            // 自动聚焦输入框
-            setTimeout(() => {
-                document.getElementById('userInput').focus();
-            }, 200);
+            setTimeout(() => document.getElementById('userInput').focus(), 200);
         }
 
-        // 选择复杂度
         function selectComplexity(complexity) {
             selectedComplexity = complexity;
         }
 
-        // 发送消息
         async function sendMessage() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
-            
             if (!text || isGenerating) return;
 
-            // 隐藏欢迎界面
             document.getElementById('welcomeScreen').style.display = 'none';
-
-            // 添加用户消息
             const userMsg = selectedIndustry ? `【${selectedIndustry}】${text}` : text;
             addMessage(userMsg, 'user');
             input.value = '';
             autoResize(input);
 
-            // 生成AI回复
             isGenerating = true;
             document.getElementById('sendBtn').disabled = true;
-
             const loadingId = addLoading();
             await new Promise(r => setTimeout(r, 1500));
             removeLoading(loadingId);
@@ -580,27 +276,22 @@
             document.getElementById('sendBtn').disabled = false;
         }
 
-        // 添加消息
         function addMessage(content, type, isHtml = false) {
             const messageList = document.getElementById('messageList');
             const div = document.createElement('div');
             div.className = `message ${type}`;
-            
             const avatar = type === 'user' ? 'TT' : '🤖';
             const bubbleContent = isHtml ? content : escapeHtml(content);
-            
             div.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
                 <div class="message-content">
                     <div class="message-bubble ${isHtml ? 'ai-reply' : ''}">${bubbleContent}</div>
                 </div>
             `;
-            
             messageList.appendChild(div);
             scrollToBottom();
         }
 
-        // 加载状态
         function addLoading() {
             const messageList = document.getElementById('messageList');
             const div = document.createElement('div');
@@ -628,16 +319,13 @@
             if (el) el.remove();
         }
 
-        // 生成PRD
         function generatePRD(requirement, industry, complexity) {
             const pages = complexity === '轻量' ? '1页' : complexity === '完整' ? '10页+' : '3-5页';
-            
             return `
                 <h1>📄 ${industry || ''}产品需求文档</h1>
                 <p><strong>需求：</strong>${escapeHtml(requirement)}</p>
                 <p><strong>复杂度：</strong>${complexity}版（${pages}）| <strong>日期：</strong>${new Date().toLocaleDateString('zh-CN')}</p>
                 <hr>
-
                 <h2>一、需求背景与目标</h2>
                 <p>根据需求描述，本功能旨在解决用户核心痛点，提升产品体验和业务指标。</p>
                 <table>
@@ -646,40 +334,29 @@
                     <tr><td>提升转化效率</td><td>转化率</td><td>+15%</td></tr>
                     <tr><td>提升满意度</td><td>NPS</td><td>≥50</td></tr>
                 </table>
-
                 <h2>二、用户画像</h2>
                 <table>
                     <tr><th>维度</th><th>描述</th></tr>
                     <tr><td>年龄</td><td>24-35岁</td></tr>
                     <tr><td>痛点</td><td>现有方案不够便捷</td></tr>
                 </table>
-
                 <h3>用户故事</h3>
                 <ul>
                     <li><strong>作为</strong>用户，<strong>我想要</strong>更便捷的操作，<strong>以便</strong>节省时间</li>
                 </ul>
-
                 <h2>三、功能范围</h2>
                 <h3>In Scope</h3>
                 <ul><li>核心功能模块</li><li>数据展示</li></ul>
                 <h3>Out of Scope</h3>
                 <ul><li>第三方集成 [v2.0]</li></ul>
-
                 <h2>四、核心流程</h2>
-                <ol>
-                    <li>用户进入页面</li>
-                    <li>输入信息</li>
-                    <li>系统处理</li>
-                    <li>展示结果</li>
-                </ol>
-
+                <ol><li>用户进入页面</li><li>输入信息</li><li>系统处理</li><li>展示结果</li></ol>
                 <h2>五、数据指标</h2>
                 <table>
                     <tr><th>指标</th><th>定义</th><th>目标</th></tr>
                     <tr><td>DAU</td><td>日活跃用户</td><td>1000+</td></tr>
                     <tr><td>留存率</td><td>次日返回</td><td>≥30%</td></tr>
                 </table>
-
                 <hr>
                 <p style="text-align:center;color:#9ca3af;font-size:13px;">
                     由 AI PRD生成器 生成，请根据实际情况调整

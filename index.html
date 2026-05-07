@@ -152,15 +152,27 @@
         .input-wrapper textarea::placeholder { color: #9ca3af; }
         .input-wrapper.expanded textarea { height: 120px; }
         .send-btn {
-            height: 48px; padding: 0 20px;
+            height: 40px; padding: 0 14px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            border: none; border-radius: 12px; color: white; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-            flex-shrink: 0; font-size: 15px; font-weight: 500;
+            border: none; border-radius: 10px; color: white; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+            flex-shrink: 0; font-size: 13px; font-weight: 500;
         }
         .send-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
         .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .send-btn svg { width: 18px; height: 18px; }
+        .send-btn svg { width: 16px; height: 16px; }
+        .paste-btn {
+            height: 40px; padding: 0 14px;
+            background: #6b7280; border: none; border-radius: 10px;
+            color: white; cursor: pointer; display: flex; align-items: center;
+            gap: 6px; transition: all 0.2s; flex-shrink: 0;
+            font-size: 13px; font-weight: 500;
+            opacity: 0; width: 0; padding: 0; overflow: hidden;
+        }
+        .paste-btn svg { width: 16px; height: 16px; }
+        .input-focused .paste-btn {
+            opacity: 1; width: auto; padding: 0 14px;
+        }
         .input-tips { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 8px; }
 
         .chat-container::-webkit-scrollbar { width: 6px; }
@@ -237,7 +249,7 @@
                         <textarea id="userInput" placeholder="描述你的产品需求..." rows="1"
                             onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
                     </div>
-                    <button class="send-btn" style="background: #6b7280;" onclick="pasteFromClipboard()">
+                    <button class="paste-btn" onclick="pasteFromClipboard()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
                             <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
@@ -402,12 +414,16 @@
 
         document.getElementById('userInput').addEventListener('focus', function() {
             this.parentElement.classList.add('expanded');
+            this.closest('.input-row').classList.add('input-focused');
         });
 
         document.getElementById('userInput').addEventListener('blur', function() {
             if (!this.value) {
                 this.parentElement.classList.remove('expanded');
             }
+            setTimeout(() => {
+                this.closest('.input-row').classList.remove('input-focused');
+            }, 150);
         });
 
         async function pasteFromClipboard() {

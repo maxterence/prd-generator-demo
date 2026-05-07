@@ -18,7 +18,6 @@
             overflow: hidden;
         }
 
-        /* 整体布局 */
         .app-layout {
             display: flex;
             flex-direction: column;
@@ -144,29 +143,73 @@
             margin-bottom: 40px;
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 600px;
+        /* 行业选择方块 */
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            max-width: 400px;
+            width: 100%;
         }
 
-        .quick-action {
+        .industry-card {
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 12px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px 16px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .industry-card:hover {
+            border-color: #4F46E5;
+            background: #f5f3ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .industry-card.active {
+            border-color: #4F46E5;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+        }
+
+        .industry-icon {
+            width: 56px;
+            height: 56px;
+            background: #f3f4f6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .industry-card.active .industry-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .industry-name {
+            font-size: 15px;
+            font-weight: 600;
             color: #374151;
         }
 
-        .quick-action:hover {
-            border-color: #4F46E5;
-            background: #f5f3ff;
-            color: #4F46E5;
+        .industry-card.active .industry-name {
+            color: white;
+        }
+
+        .industry-desc {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .industry-card.active .industry-desc {
+            color: rgba(255,255,255,0.8);
         }
 
         /* 消息样式 */
@@ -231,66 +274,17 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
 
-        /* AI回复内容样式 */
-        .ai-reply h1 {
-            font-size: 1.4em;
-            margin: 16px 0 12px;
-            color: #1f2937;
-        }
-
-        .ai-reply h2 {
-            font-size: 1.2em;
-            margin: 14px 0 10px;
-            color: #374151;
-        }
-
-        .ai-reply h3 {
-            font-size: 1.05em;
-            margin: 12px 0 8px;
-            color: #4b5563;
-        }
-
-        .ai-reply p {
-            margin-bottom: 10px;
-        }
-
-        .ai-reply table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12px 0;
-            font-size: 14px;
-        }
-
-        .ai-reply th, .ai-reply td {
-            padding: 10px 12px;
-            border: 1px solid #e5e7eb;
-            text-align: left;
-        }
-
-        .ai-reply th {
-            background: #f9fafb;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .ai-reply ul, .ai-reply ol {
-            margin: 10px 0;
-            padding-left: 24px;
-        }
-
-        .ai-reply li {
-            margin-bottom: 6px;
-        }
-
-        .ai-reply strong {
-            color: #1f2937;
-        }
-
-        .ai-reply hr {
-            border: none;
-            border-top: 1px solid #e5e7eb;
-            margin: 16px 0;
-        }
+        .ai-reply h1 { font-size: 1.4em; margin: 16px 0 12px; color: #1f2937; }
+        .ai-reply h2 { font-size: 1.2em; margin: 14px 0 10px; color: #374151; }
+        .ai-reply h3 { font-size: 1.05em; margin: 12px 0 8px; color: #4b5563; }
+        .ai-reply p { margin-bottom: 10px; }
+        .ai-reply table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+        .ai-reply th, .ai-reply td { padding: 10px 12px; border: 1px solid #e5e7eb; text-align: left; }
+        .ai-reply th { background: #f9fafb; font-weight: 600; color: #374151; }
+        .ai-reply ul, .ai-reply ol { margin: 10px 0; padding-left: 24px; }
+        .ai-reply li { margin-bottom: 6px; }
+        .ai-reply strong { color: #1f2937; }
+        .ai-reply hr { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
 
         /* 加载动画 */
         .typing-indicator {
@@ -307,13 +301,8 @@
             animation: typing 1.4s infinite;
         }
 
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
@@ -330,6 +319,40 @@
         .input-inner {
             max-width: 800px;
             margin: 0 auto;
+        }
+
+        /* 复杂度选择 */
+        .complexity-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .complexity-btn {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .complexity-btn:hover {
+            border-color: #4F46E5;
+            color: #4F46E5;
+        }
+
+        .complexity-btn.active {
+            background: #4F46E5;
+            border-color: #4F46E5;
+            color: white;
+        }
+
+        /* 输入框和按钮 */
+        .input-row {
             display: flex;
             gap: 12px;
             align-items: flex-end;
@@ -363,8 +386,8 @@
         }
 
         .send-btn {
-            width: 44px;
-            height: 44px;
+            height: 48px;
+            padding: 0 20px;
             background: linear-gradient(135deg, #4F46E5, #7C3AED);
             border: none;
             border-radius: 12px;
@@ -372,13 +395,15 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             transition: all 0.2s;
             flex-shrink: 0;
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .send-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
         }
 
@@ -390,8 +415,8 @@
         }
 
         .send-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
         }
 
         .input-tips {
@@ -401,41 +426,27 @@
             margin-top: 8px;
         }
 
-        /* 滚动条样式 */
-        .chat-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .chat-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 3px;
-        }
-
-        .chat-container::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
+        /* 滚动条 */
+        .chat-container::-webkit-scrollbar { width: 6px; }
+        .chat-container::-webkit-scrollbar-track { background: transparent; }
+        .chat-container::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
 
         /* 响应式 */
         @media (max-width: 768px) {
-            .header-title {
-                font-size: 14px;
+            .industry-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
-
+            .industry-card {
+                padding: 20px 12px;
+            }
+            .industry-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
             .message-content {
                 max-width: 85%;
-            }
-
-            .quick-actions {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .quick-action {
-                width: 100%;
             }
         }
     </style>
@@ -461,12 +472,28 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-logo">📄</div>
                     <h1 class="welcome-title">AI PRD生成器</h1>
-                    <p class="welcome-subtitle">输入一句话需求，帮你生成专业的产品需求文档</p>
-                    <div class="quick-actions">
-                        <div class="quick-action" onclick="useTemplate('做一个电商APP的会员体系，包含积分获取、积分兑换、会员等级、会员权益，目标是提升用户复购率')">🛒 电商会员体系</div>
-                        <div class="quick-action" onclick="useTemplate('做一个兴趣社交APP的匹配功能，根据用户兴趣标签进行匹配，支持文字聊天和语音通话')">💬 社交匹配功能</div>
-                        <div class="quick-action" onclick="useTemplate('做一个短视频APP的推荐优化，优化推荐算法提升用户观看时长和完播率')">📺 内容推荐优化</div>
-                        <div class="quick-action" onclick="useTemplate('做一个企业内部审批流程系统，支持多级审批、条件分支、超时自动处理')">📦 企业审批系统</div>
+                    <p class="welcome-subtitle">选择你的行业，开始生成专业PRD</p>
+                    <div class="industry-grid">
+                        <div class="industry-card" onclick="selectIndustry(this, '电商')">
+                            <div class="industry-icon">🛒</div>
+                            <div class="industry-name">电商</div>
+                            <div class="industry-desc">商城 / 会员 / 订单</div>
+                        </div>
+                        <div class="industry-card" onclick="selectIndustry(this, '社交')">
+                            <div class="industry-icon">💬</div>
+                            <div class="industry-name">社交</div>
+                            <div class="industry-desc">聊天 / 社区 / 匹配</div>
+                        </div>
+                        <div class="industry-card" onclick="selectIndustry(this, '内容')">
+                            <div class="industry-icon">📺</div>
+                            <div class="industry-name">内容</div>
+                            <div class="industry-desc">短视频 / 图文 / 直播</div>
+                        </div>
+                        <div class="industry-card" onclick="selectIndustry(this, 'B端')">
+                            <div class="industry-icon">🏢</div>
+                            <div class="industry-name">B端</div>
+                            <div class="industry-desc">SaaS / 企业 / 管理</div>
+                        </div>
                     </div>
                 </div>
 
@@ -478,34 +505,58 @@
         <!-- 底部输入区 -->
         <div class="input-area">
             <div class="input-inner">
-                <div class="input-wrapper">
-                    <textarea 
-                        id="userInput" 
-                        placeholder="描述你的产品需求..." 
-                        rows="1"
-                        onkeydown="handleKeyDown(event)"
-                        oninput="autoResize(this)"
-                    ></textarea>
+                <!-- 复杂度选择 -->
+                <div class="complexity-bar">
+                    <button class="complexity-btn" onclick="selectComplexity(this, '轻量')">📄 轻量版（1页）</button>
+                    <button class="complexity-btn active" onclick="selectComplexity(this, '标准')">📋 标准版（3-5页）</button>
+                    <button class="complexity-btn" onclick="selectComplexity(this, '完整')">📚 完整版（10页+）</button>
                 </div>
-                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/>
-                    </svg>
-                </button>
+
+                <!-- 输入框和发送按钮 -->
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="userInput" 
+                            placeholder="描述你的产品需求..." 
+                            rows="1"
+                            onkeydown="handleKeyDown(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
+                    </div>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        生成
+                    </button>
+                </div>
+                <div class="input-tips">按 Enter 发送，Shift + Enter 换行</div>
             </div>
-            <div class="input-tips">按 Enter 发送，Shift + Enter 换行</div>
         </div>
     </div>
 
     <script>
-        let chatHistory = [];
+        let selectedIndustry = '';
+        let selectedComplexity = '标准';
         let isGenerating = false;
 
-        // 使用模板
-        function useTemplate(text) {
-            document.getElementById('userInput').value = text;
-            autoResize(document.getElementById('userInput'));
-            sendMessage();
+        // 选择行业
+        function selectIndustry(el, industry) {
+            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedIndustry = industry;
+            
+            // 自动聚焦输入框
+            setTimeout(() => {
+                document.getElementById('userInput').focus();
+            }, 200);
+        }
+
+        // 选择复杂度
+        function selectComplexity(el, complexity) {
+            document.querySelectorAll('.complexity-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            selectedComplexity = complexity;
         }
 
         // 发送消息
@@ -519,7 +570,8 @@
             document.getElementById('welcomeScreen').style.display = 'none';
 
             // 添加用户消息
-            addMessage(text, 'user');
+            const userMsg = selectedIndustry ? `【${selectedIndustry}】${text}` : text;
+            addMessage(userMsg, 'user');
             input.value = '';
             autoResize(input);
 
@@ -527,15 +579,11 @@
             isGenerating = true;
             document.getElementById('sendBtn').disabled = true;
 
-            // 显示加载状态
             const loadingId = addLoading();
-
-            // 模拟生成延迟
             await new Promise(r => setTimeout(r, 1500));
-
-            // 移除加载状态，显示AI回复
             removeLoading(loadingId);
-            const reply = generatePRD(text);
+
+            const reply = generatePRD(text, selectedIndustry, selectedComplexity);
             addMessage(reply, 'ai', true);
 
             isGenerating = false;
@@ -549,28 +597,20 @@
             div.className = `message ${type}`;
             
             const avatar = type === 'user' ? 'TT' : '🤖';
+            const bubbleContent = isHtml ? content : escapeHtml(content);
             
-            if (isHtml) {
-                div.innerHTML = `
-                    <div class="message-avatar">${avatar}</div>
-                    <div class="message-content">
-                        <div class="message-bubble ai-reply">${content}</div>
-                    </div>
-                `;
-            } else {
-                div.innerHTML = `
-                    <div class="message-avatar">${avatar}</div>
-                    <div class="message-content">
-                        <div class="message-bubble">${escapeHtml(content)}</div>
-                    </div>
-                `;
-            }
+            div.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-bubble ${isHtml ? 'ai-reply' : ''}">${bubbleContent}</div>
+                </div>
+            `;
             
             messageList.appendChild(div);
             scrollToBottom();
         }
 
-        // 添加加载状态
+        // 加载状态
         function addLoading() {
             const messageList = document.getElementById('messageList');
             const div = document.createElement('div');
@@ -593,24 +633,23 @@
             return div.id;
         }
 
-        // 移除加载状态
         function removeLoading(id) {
             const el = document.getElementById(id);
             if (el) el.remove();
         }
 
-        // 生成PRD内容
-        function generatePRD(requirement) {
+        // 生成PRD
+        function generatePRD(requirement, industry, complexity) {
+            const pages = complexity === '轻量' ? '1页' : complexity === '完整' ? '10页+' : '3-5页';
+            
             return `
-                <h1>📄 产品需求文档</h1>
+                <h1>📄 ${industry || ''}产品需求文档</h1>
                 <p><strong>需求：</strong>${escapeHtml(requirement)}</p>
-                <p><strong>版本：</strong>v1.0 | <strong>日期：</strong>${new Date().toLocaleDateString('zh-CN')}</p>
-
+                <p><strong>复杂度：</strong>${complexity}版（${pages}）| <strong>日期：</strong>${new Date().toLocaleDateString('zh-CN')}</p>
                 <hr>
 
                 <h2>一、需求背景与目标</h2>
                 <p>根据需求描述，本功能旨在解决用户核心痛点，提升产品体验和业务指标。</p>
-                
                 <table>
                     <tr><th>目标</th><th>衡量指标</th><th>目标值</th></tr>
                     <tr><td>提升用户活跃</td><td>DAU</td><td>+20%</td></tr>
@@ -632,15 +671,9 @@
 
                 <h2>三、功能范围</h2>
                 <h3>In Scope</h3>
-                <ul>
-                    <li>核心功能模块</li>
-                    <li>数据展示</li>
-                </ul>
-
+                <ul><li>核心功能模块</li><li>数据展示</li></ul>
                 <h3>Out of Scope</h3>
-                <ul>
-                    <li>第三方集成 [v2.0]</li>
-                </ul>
+                <ul><li>第三方集成 [v2.0]</li></ul>
 
                 <h2>四、核心流程</h2>
                 <ol>
@@ -664,7 +697,6 @@
             `;
         }
 
-        // 工具函数
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -691,7 +723,8 @@
         function clearChat() {
             document.getElementById('messageList').innerHTML = '';
             document.getElementById('welcomeScreen').style.display = 'flex';
-            chatHistory = [];
+            selectedIndustry = '';
+            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('active'));
         }
     </script>
 </body>

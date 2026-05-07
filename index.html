@@ -105,6 +105,7 @@
         /* AI回复样式 */
         .ai-reply h1 { font-size: 1.4em; margin: 16px 0 12px; color: #1f2937; }
         .ai-reply h2 { font-size: 1.2em; margin: 14px 0 10px; color: #374151; }
+        .ai-reply h3 { font-size: 1.1em; margin: 12px 0 8px; color: #4b5563; }
         .ai-reply p { margin-bottom: 10px; }
         .ai-reply table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
         .ai-reply th, .ai-reply td { padding: 10px 12px; border: 1px solid #e5e7eb; text-align: left; }
@@ -112,6 +113,19 @@
         .ai-reply ul, .ai-reply ol { margin: 10px 0; padding-left: 24px; }
         .ai-reply li { margin-bottom: 6px; }
         .ai-reply hr { border: none; border-top: 1px solid #e5e7eb; margin: 16px 0; }
+        .ai-reply strong { color: #1f2937; }
+
+        /* 检查报告样式 */
+        .check-score {
+            display: inline-block; padding: 8px 20px; border-radius: 20px;
+            font-size: 24px; font-weight: 700; margin: 12px 0;
+        }
+        .check-score.good { background: #dcfce7; color: #166534; }
+        .check-score.medium { background: #fef3c7; color: #92400e; }
+        .check-score.bad { background: #fee2e2; color: #991b1b; }
+        .issue-high { color: #dc2626; font-weight: 600; }
+        .issue-medium { color: #d97706; font-weight: 600; }
+        .issue-low { color: #6b7280; font-weight: 600; }
 
         /* 加载动画 */
         .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
@@ -152,16 +166,6 @@
         }
         .input-wrapper textarea::placeholder { color: #9ca3af; }
         .input-wrapper.expanded textarea { height: 120px; }
-        .send-btn {
-            height: 40px; padding: 0 14px;
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            border: none; border-radius: 10px; color: white; cursor: pointer;
-            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
-            flex-shrink: 0; font-size: 13px; font-weight: 500;
-        }
-        .send-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .send-btn svg { width: 16px; height: 16px; }
         .paste-btn {
             position: absolute; bottom: 6px; right: 6px;
             background: transparent; border: none; border-radius: 6px;
@@ -172,9 +176,19 @@
         }
         .paste-btn:hover { color: #4F46E5; }
         .paste-btn svg { width: 14px; height: 14px; }
-        .input-focused .paste-btn {
-            opacity: 1; pointer-events: auto;
+        .input-focused .paste-btn { opacity: 1; pointer-events: auto; }
+
+        .send-btn {
+            height: 40px; padding: 0 14px;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            border: none; border-radius: 10px; color: white; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+            flex-shrink: 0; font-size: 13px; font-weight: 500;
         }
+        .send-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .send-btn svg { width: 16px; height: 16px; }
+
         .input-tips { text-align: center; color: #9ca3af; font-size: 12px; margin-top: 8px; }
 
         .chat-container::-webkit-scrollbar { width: 6px; }
@@ -200,7 +214,7 @@
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-logo">📄</div>
                     <h1 class="welcome-title">AI PRD生成器</h1>
-                    <p class="welcome-subtitle">选择行业，输入需求，一键生成专业PRD</p>
+                    <p class="welcome-subtitle">选择行业，输入需求，一键生成PRD或检查PRD质量</p>
                     <div class="industry-grid">
                         <div class="industry-chip" onclick="selectIndustry(this, '电商')">
                             <span class="industry-chip-icon">🛒</span>
@@ -247,8 +261,8 @@
                     </select>
                 </div>
                 <div class="input-row">
-                    <div class="input-wrapper">
-                        <textarea id="userInput" placeholder="描述你的产品需求..." rows="1"
+                    <div class="input-wrapper" id="inputWrapper">
+                        <textarea id="userInput" placeholder="描述你的产品需求，或粘贴PRD内容进行检查..." rows="1"
                             onkeydown="handleKeyDown(event)" oninput="autoResize(this)"></textarea>
                         <button class="paste-btn" onclick="pasteFromClipboard()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -265,7 +279,7 @@
                         生成
                     </button>
                 </div>
-                <div class="input-tips">按 Enter 发送，Shift + Enter 换行</div>
+                <div class="input-tips">输入需求生成PRD | 粘贴PRD内容+「检查」进行质量检查</div>
             </div>
         </div>
     </div>
@@ -292,19 +306,38 @@
             if (!text || isGenerating) return;
 
             document.getElementById('welcomeScreen').style.display = 'none';
-            const userMsg = selectedIndustry ? `【${selectedIndustry}】${text}` : text;
-            addMessage(userMsg, 'user');
-            input.value = '';
-            autoResize(input);
 
-            isGenerating = true;
-            document.getElementById('sendBtn').disabled = true;
-            const loadingId = addLoading();
-            await new Promise(r => setTimeout(r, 1500));
-            removeLoading(loadingId);
+            // 判断是生成还是检查
+            const isCheck = text.includes('检查') || text.includes('审核') || text.includes('review') || text.length > 100;
 
-            const reply = generatePRD(text, selectedIndustry, selectedComplexity);
-            addMessage(reply, 'ai', true);
+            if (isCheck) {
+                addMessage(text, 'user');
+                input.value = '';
+                autoResize(input);
+
+                isGenerating = true;
+                document.getElementById('sendBtn').disabled = true;
+                const loadingId = addLoading();
+                await new Promise(r => setTimeout(r, 2000));
+                removeLoading(loadingId);
+
+                const reply = checkPRD(text);
+                addMessage(reply, 'ai', true);
+            } else {
+                const userMsg = selectedIndustry ? `【${selectedIndustry}】${text}` : text;
+                addMessage(userMsg, 'user');
+                input.value = '';
+                autoResize(input);
+
+                isGenerating = true;
+                document.getElementById('sendBtn').disabled = true;
+                const loadingId = addLoading();
+                await new Promise(r => setTimeout(r, 1500));
+                removeLoading(loadingId);
+
+                const reply = generatePRD(text, selectedIndustry, selectedComplexity);
+                addMessage(reply, 'ai', true);
+            }
 
             isGenerating = false;
             document.getElementById('sendBtn').disabled = false;
@@ -398,6 +431,53 @@
             `;
         }
 
+        function checkPRD(prdContent) {
+            // 模拟PRD检查
+            const score = Math.floor(Math.random() * 30) + 60; // 60-90分
+            let scoreClass = 'good';
+            let scoreText = '优秀';
+            if (score < 70) { scoreClass = 'bad'; scoreText = '需要改进'; }
+            else if (score < 85) { scoreClass = 'medium'; scoreText = '良好'; }
+
+            return `
+                <h1>📊 PRD质量检查报告</h1>
+                <div class="check-score ${scoreClass}">${score}分 - ${scoreText}</div>
+                <hr>
+                <h2>✅ 优点</h2>
+                <ul>
+                    <li>文档结构完整，包含必要模块</li>
+                    <li>目标描述清晰</li>
+                </ul>
+                <h2>⚠️ 需改进</h2>
+                <h3><span class="issue-high">【高优先级】</span></h3>
+                <ul>
+                    <li><strong>数据指标不够具体</strong>
+                        <br>建议：补充可量化的目标值和计算公式</li>
+                </ul>
+                <h3><span class="issue-medium">【中优先级】</span></h3>
+                <ul>
+                    <li><strong>边界条件覆盖不完整</strong>
+                        <br>建议：补充异常流程（网络异常、权限不足等）</li>
+                </ul>
+                <h3><span class="issue-low">【低优先级】</span></h3>
+                <ul>
+                    <li><strong>缺少版本历史</strong>
+                        <br>建议：增加版本号和修改记录</li>
+                </ul>
+                <hr>
+                <h2>📋 改进清单</h2>
+                <ul>
+                    <li>□ 补充数据指标（DAU、转化率等）</li>
+                    <li>□ 完善异常流程</li>
+                    <li>□ 增加版本历史</li>
+                </ul>
+                <hr>
+                <p style="text-align:center;color:#9ca3af;font-size:13px;">
+                    由 AI PRD生成器 检查，请根据建议优化您的PRD
+                </p>
+            `;
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
@@ -414,6 +494,21 @@
             textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
         }
 
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('messageList').innerHTML = '';
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            selectedIndustry = '';
+            document.querySelectorAll('.industry-chip').forEach(c => c.classList.remove('active'));
+        }
+
+        // 输入框聚焦/失焦处理
         document.getElementById('userInput').addEventListener('focus', function() {
             this.parentElement.classList.add('expanded');
             this.closest('.input-row').classList.add('input-focused');
@@ -438,20 +533,6 @@
             } catch (err) {
                 alert('无法访问剪贴板，请手动粘贴');
             }
-        }
-
-        function handleKeyDown(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }
-
-        function clearChat() {
-            document.getElementById('messageList').innerHTML = '';
-            document.getElementById('welcomeScreen').style.display = 'flex';
-            selectedIndustry = '';
-            document.querySelectorAll('.industry-chip').forEach(c => c.classList.remove('active'));
         }
     </script>
 </body>

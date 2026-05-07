@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PRD生成器 - 演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title span {
+            font-size: 1.5rem;
+        }
+
+        /* 输入框样式 */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            height: 120px;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group textarea::placeholder {
+            color: #aaa;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .char-count.warning {
+            color: #f59e0b;
+        }
+
+        .char-count.error {
+            color: #ef4444;
+        }
+
+        /* 选择器样式 */
+        .select-group {
+            margin-bottom: 24px;
+        }
+
+        .select-group label {
+            display: block;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .select-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .select-option {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            background: #fafafa;
+        }
+
+        .select-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .select-option.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* 生成按钮 */
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .generate-btn.loading .spinner {
+            display: block;
+        }
+
+        .generate-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 结果区域 */
+        .result-card {
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.copy {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn.copy:hover {
+            background: #5a6fd6;
+        }
+
+        .action-btn.regenerate {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .action-btn.regenerate:hover {
+            background: #e0e0e0;
+        }
+
+        /* PRD内容样式 */
+        .prd-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .prd-content h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .prd-content h2 {
+            font-size: 1.2rem;
+            color: #444;
+            margin: 20px 0 10px;
+        }
+
+        .prd-content h3 {
+            font-size: 1rem;
+            color: #555;
+            margin: 15px 0 8px;
+        }
+
+        .prd-content p {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .prd-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .prd-content th, .prd-content td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .prd-content th {
+            background: #667eea;
+            color: white;
+            font-weight: 500;
+        }
+
+        .prd-content tr:hover {
+            background: #f5f5f5;
+        }
+
+        .prd-content ul, .prd-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+
+        .prd-content li {
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .prd-content code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .prd-content strong {
+            color: #333;
+        }
+
+        /* 提示信息 */
+        .tips {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
+        .tips strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .select-options {
+                flex-direction: column;
+            }
+
+            .select-option {
+                text-align: center;
+            }
+
+            .result-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI PRD生成器</h1>
+            <p>输入一句话需求，5分钟生成专业PRD</p>
+        </div>
+
+        <!-- 输入卡片 -->
+        <div class="card" id="inputCard">
+            <div class="card-title">
+                <span>📝</span> 需求描述
+            </div>
+            
+            <div class="input-group">
+                <textarea 
+                    id="requirementInput" 
+                    placeholder="请描述你的产品需求，例如：做一个电商APP的会员体系，包含积分获取、积分兑换、会员等级、会员权益，目标是提升用户复购率和客单价"
+                    maxlength="200"
+                ></textarea>
+                <div class="char-count" id="charCount">0/200字</div>
+            </div>
+
+            <div class="select-group">
+                <label>选择行业</label>
+                <div class="select-options" id="industryOptions">
+                    <div class="select-option active" data-value="电商">🛒 电商</div>
+                    <div class="select-option" data-value="社交">💬 社交</div>
+                    <div class="select-option" data-value="内容">📺 内容</div>
+                    <div class="select-option" data-value="其他">📦 其他</div>
+                </div>
+            </div>
+
+            <div class="select-group">
+                <label>输出复杂度</label>
+                <div class="select-options" id="complexityOptions">
+                    <div class="select-option" data-value="轻量">📄 轻量（1页）</div>
+                    <div class="select-option active" data-value="标准">📋 标准（3-5页）</div>
+                    <div class="select-option" data-value="完整">📚 完整（10页+）</div>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generateBtn" onclick="generatePRD()">
+                <div class="spinner"></div>
+                <span class="btn-text">✨ 生成PRD</span>
+            </button>
+        </div>
+
+        <!-- 结果卡片 -->
+        <div class="card result-card" id="resultCard">
+            <div class="result-header">
+                <div class="result-title">📄 生成的PRD</div>
+                <div class="result-actions">
+                    <button class="action-btn copy" onclick="copyPRD()">📋 复制</button>
+                    <button class="action-btn regenerate" onclick="regenerate()">🔄 重新生成</button>
+                </div>
+            </div>
+            
+            <div class="prd-content" id="prdContent"></div>
+
+            <div class="tips">
+                <strong>💡 提示：</strong>
+                这是演示版本，实际Coze Bot会生成更完整的PRD内容。
+                标注 [待确认] 的内容需要根据实际情况调整。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 状态管理
+        let selectedIndustry = '电商';
+        let selectedComplexity = '标准';
+
+        // 行业选择
+        document.querySelectorAll('#industryOptions .select-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#industryOptions .select-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                selectedIndustry = this.dataset.value;
+            });
+        });
+
+        // 复杂度选择
+        document.querySelectorAll('#complexityOptions .select-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#complexityOptions .select-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                selectedComplexity = this.dataset.value;
+            });
+        });
+
+        // 字数统计
+        document.getElementById('requirementInput').addEventListener('input', function() {
+            const count = this.value.length;
+            const countEl = document.getElementById('charCount');
+            countEl.textContent = `${count}/200字`;
+            
+            countEl.classList.remove('warning', 'error');
+            if (count < 50) {
+                countEl.classList.add('warning');
+            } else if (count > 200) {
+                countEl.classList.add('error');
+            }
+        });
+
+        // 生成PRD
+        function generatePRD() {
+            const input = document.getElementById('requirementInput').value.trim();
+            
+            if (input.length < 10) {
+                alert('请输入至少10个字的需求描述');
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            // 模拟生成延迟
+            setTimeout(() => {
+                const prd = generateMockPRD(input, selectedIndustry, selectedComplexity);
+                document.getElementById('prdContent').innerHTML = prd;
+                document.getElementById('resultCard').classList.add('show');
+                document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+                
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        // 生成模拟PRD内容
+        function generateMockPRD(requirement, industry, complexity) {
+            const industryData = {
+                '电商': {
+                    metrics: 'GMV、转化率、客单价、复购率、ROI',
+                    boundaries: '库存管理、并发处理、优惠叠加、退换货流程'
+                },
+                '社交': {
+                    metrics: 'DAU/MAU、留存率、互动率、关系链深度',
+                    boundaries: '消息延迟、内容安全、隐私保护、举报处理'
+                },
+                '内容': {
+                    metrics: 'DAU、人均时长、PV/UV、完播率、互动率',
+                    boundaries: '内容审核、版权保护、推荐多样性、冷启动'
+                },
+                '其他': {
+                    metrics: '用户活跃度、任务完成率、满意度、NPS',
+                    boundaries: '权限管理、数据安全、异常处理、性能优化'
+                }
+            };
+
+            const data = industryData[industry];
+            
+            return `
+                <h1>📄 ${requirement.substring(0, 20)}... PRD</h1>
+                <p><strong>版本：</strong>v1.0 | <strong>日期：</strong>${new Date().toLocaleDateString('zh-CN')} | <strong>状态：</strong>初稿</p>
+
+                <h2>一、需求背景与目标</h2>
+                <h3>1.1 背景</h3>
+                <p>根据用户需求：${requirement}</p>
+                <p>本需求旨在解决${industry}行业的核心痛点，提升用户体验和业务指标。</p>
+                
+                <h3>1.2 目标</h3>
+                <table>
+                    <tr><th>目标</th><th>衡量指标</th><th>目标值</th></tr>
+                    <tr><td>提升用户活跃</td><td>DAU</td><td>+20%</td></tr>
+                    <tr><td>提升转化效率</td><td>转化率</td><td>+15%</td></tr>
+                    <tr><td>提升用户满意度</td><td>NPS</td><td>≥50</td></tr>
+                </table>
+
+                <h2>二、用户画像</h2>
+                <table>
+                    <tr><th>维度</th><th>描述</th></tr>
+                    <tr><td>年龄</td><td>24-35岁</td></tr>
+                    <tr><td>职业</td><td>白领、学生</td></tr>
+                    <tr><td>痛点</td><td>现有方案不够便捷，效率低下</td></tr>
+                    <tr><td>场景</td><td>日常高频使用场景</td></tr>
+                </table>
+
+                <h3>用户故事</h3>
+                <ul>
+                    <li><strong>作为</strong>用户，<strong>我想要</strong>更便捷的操作流程，<strong>以便</strong>节省时间</li>
+                    <li><strong>作为</strong>用户，<strong>我想要</strong>清晰的数据展示，<strong>以便</strong>做出决策</li>
+                </ul>
+
+                <h2>三、功能范围</h2>
+                <h3>In Scope（要做）</h3>
+                <ul>
+                    <li>核心功能模块</li>
+                    <li>数据展示与分析</li>
+                    <li>用户交互流程</li>
+                </ul>
+
+                <h3>Out of Scope（不做）</h3>
+                <ul>
+                    <li>第三方系统集成 [v2.0]</li>
+                    <li>高级数据分析 [v2.0]</li>
+                </ul>
+
+                <h2>四、核心流程</h2>
+                <p><strong>主流程：</strong></p>
+                <ol>
+                    <li>用户进入页面</li>
+                    <li>输入必要信息</li>
+                    <li>系统处理并返回结果</li>
+                    <li>用户确认并完成</li>
+                </ol>
+
+                <p><strong>异常流程：</strong></p>
+                <ul>
+                    <li>网络异常：提示用户重试</li>
+                    <li>数据异常：展示错误信息</li>
+                    <li>超时处理：自动重试或提示</li>
+                </ul>
+
+                <h2>五、数据指标设计</h2>
+                <h3>北极星指标</h3>
+                <p><strong>日活跃用户数（DAU）</strong>：衡量产品核心价值</p>
+                
+                <h3>一级指标</h3>
+                <table>
+                    <tr><th>指标</th><th>定义</th><th>目标值</th></tr>
+                    <tr><td>新增用户数</td><td>每日新注册用户</td><td>1000+/天</td></tr>
+                    <tr><td>留存率</td><td>次日返回用户占比</td><td>≥30%</td></tr>
+                    <tr><td>转化率</td><td>完成核心操作用户占比</td><td>≥15%</td></tr>
+                </table>
+
+                <h3>二级指标</h3>
+                <p>${data.metrics}</p>
+
+                <h2>六、边界条件与异常处理</h2>
+                <table>
+                    <tr><th>场景</th><th>处理方式</th></tr>
+                    <tr><td>网络断开</td><td>缓存数据，提示重试</td></tr>
+                    <tr><td>数据为空</td><td>展示空状态引导</td></tr>
+                    <tr><td>并发冲突</td><td>乐观锁，提示刷新</td></tr>
+                    <tr><td>权限不足</td><td>提示申请权限</td></tr>
+                </table>
+
+                <h2>七、上线策略</h2>
+                <h3>灰度方案</h3>
+                <ul>
+                    <li>第一阶段：10%用户灰度（3天）</li>
+                    <li>第二阶段：50%用户灰度（3天）</li>
+                    <li>第三阶段：全量上线</li>
+                </ul>
+
+                <h3>回滚方案</h3>
+                <p>触发条件：核心指标下降超过20%<br>
+                回滚方式：一键切换到上一版本<br>
+                回滚时长：< 5分钟</p>
+
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+                <p style="text-align: center; color: #888; font-size: 0.9rem;">
+                    本PRD由 AI PRD生成器 辅助生成，请根据实际情况调整完善<br>
+                    标注 [待确认] 的内容需要根据实际情况调整
+                </p>
+            `;
+        }
+
+        // 复制PRD
+        function copyPRD() {
+            const content = document.getElementById('prdContent').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('已复制到剪贴板！');
+            }).catch(err => {
+                console.error('复制失败:', err);
+            });
+        }
+
+        // 重新生成
+        function regenerate() {
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('inputCard').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

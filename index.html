@@ -143,28 +143,16 @@
             margin-bottom: 20px;
         }
 
-        /* 行业选择 - 横向滚动 */
-        .industry-scroll {
-            width: 100%;
-            max-width: 500px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            padding: 4px 0;
-        }
-
-        .industry-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .industry-list {
+        /* 行业选择 - 铺开网格 */
+        .industry-grid {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            padding: 0 4px;
+            justify-content: center;
+            max-width: 500px;
         }
 
         .industry-chip {
-            flex-shrink: 0;
             background: white;
             border: 1.5px solid #e5e7eb;
             border-radius: 20px;
@@ -466,8 +454,7 @@
                     <div class="welcome-logo">📄</div>
                     <h1 class="welcome-title">AI PRD生成器</h1>
                     <p class="welcome-subtitle">选择你的行业，开始生成专业PRD</p>
-                    <div class="industry-scroll">
-                        <div class="industry-list">
+                    <div class="industry-grid">
                             <div class="industry-chip" onclick="selectIndustry(this, '电商')">
                                 <span class="industry-chip-icon">🛒</span>
                                 <span class="industry-chip-name">电商</span>
@@ -496,7 +483,6 @@
                                 <span class="industry-chip-icon">🏥</span>
                                 <span class="industry-chip-name">医疗</span>
                             </div>
-                        </div>
                     </div>
                 </div>
 
